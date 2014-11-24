@@ -33,8 +33,9 @@
 #ifndef __FTExtrudeGlyph__
 #define __FTExtrudeGlyph__
 
-#ifdef __cplusplus
+typedef int GLint;
 
+#ifdef __cplusplus
 
 /**
  * FTExtrudeGlyph is a specialisation of FTGlyph for creating tessellated
@@ -51,13 +52,13 @@ class FTGL_EXPORT FTExtrudeGlyph : public FTGlyph
          * @param depth The distance along the z axis to extrude the glyph
          * @param frontOutset outset contour size
          * @param backOutset outset contour size
-         * @param useDisplayList Enable or disable the use of Display Lists
-         *                       for this glyph
-         *                       <code>true</code> turns ON display lists.
-         *                       <code>false</code> turns OFF display lists.
+         
          */
-        FTExtrudeGlyph(FT_GlyphSlot glyph, float depth, float frontOutset,
-                       float backOutset, bool useDisplayList);
+        FTExtrudeGlyph(FT_GlyphSlot glyph, float depth, 
+                       float frontOutset, float backOutset,
+                       GLint vertexCoordAttribute, 
+                       GLint vertexNormalAttribute, 
+                       GLint vertexOffsetUniform);
 
         /**
          * Destructor
@@ -96,7 +97,9 @@ FTGL_BEGIN_C_DECLS
  */
 FTGL_EXPORT FTGLglyph *ftglCreateExtrudeGlyph(FT_GlyphSlot glyph, float depth,
                                 float frontOutset, float backOutset,
-                                int useDisplayList);
+                                GLint vertexCoordAttribute, 
+                                GLint vertexNormalAttribute, 
+                                GLint vertexOffsetUniform);
 
 FTGL_END_C_DECLS
 

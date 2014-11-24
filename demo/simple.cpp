@@ -28,69 +28,30 @@
 #include <math.h> // sin(), cos()
 #include <stdlib.h> // exit()
 
-#if defined HAVE_GL_GLUT_H
-#   include <GL/glut.h>
-#elif defined HAVE_GLUT_GLUT_H
-#   include <GLUT/glut.h>
-#else
-#   error GLUT headers not present
-#endif
-
 #include <FTGL/ftgl.h>
+#define GLFW_INCLUDE_GLCOREARB // Tell GLFW to use gl3.h
+#include <GLFW/glfw3.h>
 
-static FTFont *font[3];
-static int fontindex = 0;
+
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+static GLuint shaderProgram; 
+static GLint vertexCoordAttribute;
+static GLint vertexNormalAttribute;
+static GLint vertexOffsetUniform;
+static GLint mvpUniform;
+
+void compileShaders();
+void print_log(GLuint object);
+
+static FTFont *font;
 static int lastfps = 0;
 static int frames = 0;
 
-//
-//  FTHaloGlyph is a derivation of FTPolygonGlyph that also displays a
-//  halo of FTOutlineGlyph objects at varying positions and with varying
-//  outset values.
-//
-class FTHaloGlyph : public FTPolygonGlyph
-{
-    public:
-        FTHaloGlyph(FT_GlyphSlot glyph) : FTPolygonGlyph(glyph, 0, true)
-        {
-            for(int i = 0; i < 5; i++)
-            {
-                subglyph[i] = new FTOutlineGlyph(glyph, i, true);
-            }
-        }
-
-    private:
-        const FTPoint& Render(const FTPoint& pen, int renderMode)
-        {
-            glPushMatrix();
-            for(int i = 0; i < 5; i++)
-            {
-                glTranslatef(0.0, 0.0, -2.0);
-                subglyph[i]->Render(pen, renderMode);
-            }
-            glPopMatrix();
-
-            return FTPolygonGlyph::Render(pen, renderMode);
-        }
-
-        FTGlyph *subglyph[5];
-};
-
-//
-//  FTHaloFont is a simple FTFont derivation that builds FTHaloGlyph
-//  objects.
-//
-class FTHaloFont : public FTFont
-{
-    public:
-        FTHaloFont(char const *fontFilePath) : FTFont(fontFilePath) {}
-
-    private:
-        virtual FTGlyph* MakeGlyph(FT_GlyphSlot slot)
-        {
-            return new FTHaloGlyph(slot);
-        }
-};
+static GLFWwindow *window;
 
 //
 //  Main OpenGL loop: set up lights, apply a few rotation effects, and
@@ -98,52 +59,35 @@ class FTHaloFont : public FTFont
 //
 static void RenderScene(void)
 {
-    int now = glutGet(GLUT_ELAPSED_TIME);
-
-    float n = (float)now / 20.;
-    float t1 = sin(n / 80);
-    float t2 = sin(n / 50 + 1);
-    float t3 = sin(n / 30 + 2);
-
-    float ambient[4]  = { (t1 + 2.0) / 3,
-                          (t2 + 2.0) / 3,
-                          (t3 + 2.0) / 3, 0.3 };
-    float diffuse[4]  = { 1.0, 0.9, 0.9, 1.0 };
-    float specular[4] = { 1.0, 0.7, 0.7, 1.0 };
-    float position[4] = { 100.0, 100.0, 0.0, 1.0 };
-
-    float front_ambient[4]  = { 0.7, 0.7, 0.7, 0.0 };
-
+    glfwPollEvents();
+    float now = glfwGetTime();
+    
+    glClearColor(1,1,1,1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glEnable(GL_LIGHTING);
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_LINE_SMOOTH);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-    glPushMatrix();
-        glTranslatef(-0.9, -0.2, -10.0);
-        glLightfv(GL_LIGHT1, GL_AMBIENT,  ambient);
-        glLightfv(GL_LIGHT1, GL_DIFFUSE,  diffuse);
-        glLightfv(GL_LIGHT1, GL_SPECULAR, specular);
-        glLightfv(GL_LIGHT1, GL_POSITION, position);
-        glEnable(GL_LIGHT1);
-    glPopMatrix();
 
-    glPushMatrix();
-        glMaterialfv(GL_FRONT, GL_AMBIENT, front_ambient);
-        glColorMaterial(GL_FRONT, GL_DIFFUSE);
-        glTranslatef(0.0, 0.0, 20.0);
-        glRotatef(n / 1.11, 0.0, 1.0, 0.0);
-        glRotatef(n / 2.23, 1.0, 0.0, 0.0);
-        glRotatef(n / 3.17, 0.0, 0.0, 1.0);
-        glTranslatef(-260.0, -0.2, 0.0);
-        glColor3f(1.0, 1.0, 1.0);
-        font[fontindex]->Render("Hello FTGL!");
-    glPopMatrix();
+    int screen_width = 1;
+    int screen_height = 1;
+    float angle = now * 45;
+    glm::vec3 axis_y(0, 1, 0);
+    glm::mat4 anim = glm::rotate(glm::mat4(1.0f), glm::radians(angle), axis_y);
 
-    glutSwapBuffers();
+    glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.01, 0.01, 0.01));
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, -4.0));
+
+    glm::mat4 view = glm::lookAt(glm::vec3(0.0, 2.0, 0.0), glm::vec3(0.0, 0.0, -4.0), glm::vec3(0.0, 1.0, 0.0));
+    glm::mat4 projection = glm::perspective(45.0f, 1.0f*screen_width/screen_height, 0.1f, 10.0f);
+    
+    glm::mat4 mvp = projection * view * model * scale * anim;
+
+    glUseProgram(shaderProgram);
+    glUniformMatrix4fv(mvpUniform, 1, GL_FALSE, glm::value_ptr(mvp));
+
+    font->Render("Great Job!");
+
+    glfwSwapBuffers(window);
 
     frames++;
 
@@ -156,23 +100,13 @@ static void RenderScene(void)
     }
 }
 
-//
-//  GLUT key processing function: <esc> quits, <tab> cycles across fonts.
-//
-static void ProcessKeys(unsigned char key, int x, int y)
+void onReshape(GLFWwindow* win, int width, int height) {
+    glViewport(0, 0, width, height);
+}
+
+void error_callback(int error, const char* description)
 {
-    switch(key)
-    {
-    case 27:
-        delete font[0];
-        delete font[1];
-        delete font[2];
-        exit(EXIT_SUCCESS);
-        break;
-    case '\t':
-        fontindex = (fontindex + 1) % 3;
-        break;
-    }
+    fputs(description, stderr);
 }
 
 //
@@ -180,69 +114,204 @@ static void ProcessKeys(unsigned char key, int x, int y)
 //
 int main(int argc, char **argv)
 {
-    char const *file = NULL;
+    // From config.h
+    char const *file = FONT_FILE;
 
-#ifdef FONT_FILE
-    file = FONT_FILE;
-#else
-    if(argc < 2)
-    {
-        fprintf(stderr, "Usage: %s <font_name.ttf>\n", argv[0]);
-        return EXIT_FAILURE;
+    // Initialise GLFW
+    if(!glfwInit()) {
+        fprintf( stderr, "Failed to initialize GLFW\n" );
+        return -1;
     }
-#endif
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    if(argc > 1)
-    {
-        file = argv[1];
+    glfwSetErrorCallback(error_callback);
+    window = glfwCreateWindow( 640, 480, "FTGL GL3 Test", NULL, NULL);
+    if( window == NULL ){
+        //fprintf( stderr, "Failed to open GLFW window. \n" );
+        glfwTerminate();
+        return -1;
     }
+    glfwMakeContextCurrent(window);
+    
+    glfwSetFramebufferSizeCallback(window, onReshape);
 
-    // Initialise GLUT stuff
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-    glutInitWindowPosition(100, 100);
-    glutInitWindowSize(640, 480);
-    glutCreateWindow("simple FTGL C++ demo");
-
-    glutDisplayFunc(RenderScene);
-    glutIdleFunc(RenderScene);
-    glutKeyboardFunc(ProcessKeys);
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(90, 640.0f / 480.0f, 1, 1000);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    gluLookAt(0.0, 0.0, 640.0f / 2.0f, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-
+    compileShaders();
+    
+    glEnable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
     // Initialise FTGL stuff
-    font[0] = new FTExtrudeFont(file);
-    font[1] = new FTBufferFont(file);
-    font[2] = new FTHaloFont(file);
+    font = new FTExtrudeFont(file);
 
-    if(font[0]->Error() || font[1]->Error() || font[2]->Error())
+    if(font->Error())
     {
         fprintf(stderr, "%s: could not load font `%s'\n", argv[0], file);
         return EXIT_FAILURE;
     }
 
-    font[0]->FaceSize(80);
-    font[0]->Depth(10);
-    font[0]->Outset(0, 3);
-    font[0]->CharMap(ft_encoding_unicode);
+    font->ShaderLocations(vertexCoordAttribute, vertexNormalAttribute, vertexOffsetUniform);
+    font->FaceSize(90);
+    font->Depth(100);
+    font->Outset(1, 4);
+    font->CharMap(ft_encoding_unicode);
 
-    font[1]->FaceSize(80);
-    font[1]->CharMap(ft_encoding_unicode);
-
-    font[2]->FaceSize(80);
-    font[2]->CharMap(ft_encoding_unicode);
-
-    fprintf(stderr, "Using FTGL version %s\n",
-            FTGL::GetString(FTGL::CONFIG_VERSION));
-
-    // Run GLUT loop
-    glutMainLoop();
+    while (!glfwWindowShouldClose(window) && glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS) {
+        RenderScene();
+    }
 
     return EXIT_SUCCESS;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+static const char * vs_source[] =
+{
+"#version 150                                                   \n"
+"                                                               \n"
+"uniform mat4 mvp;                                              \n"
+"uniform vec3 pen;                                              \n"
+"                                                               \n"
+"in      vec3 v_coord;                                        \n"
+"in      vec3 v_normal;                                         \n"
+"out     vec3 f_color;                                          \n"
+"                                                               \n"
+"void main(void) {                                              \n"
+"  gl_Position = mvp * (vec4(v_coord, 1.0) + vec4(pen, 1.0)); \n"
+// "  f_color = vec3(-v_coord.z/100,0.4,0.9);                    \n"
+"  f_color = vec3((v_normal.x+1)/2,(v_normal.y+1)/2,(v_normal.z+1)/2);  \n"
+"}                                                              \n"
+};
+
+static const char * fs_source[] =
+{
+"#version 150                                                   \n"
+"                                                               \n"
+"in      vec3 f_color;                                          \n"
+"out     vec4 fragColor;                                        \n"
+"                                                               \n"
+"void main(void) {                                              \n"
+"  fragColor = vec4(f_color.x, f_color.y, f_color.z, 1.0);      \n"
+"}                                                              \n"
+};
+
+
+void compileShaders() {
+    
+    printf("Compiling shaders...\n");
+
+    GLint link_ok = GL_FALSE;
+ 
+    GLuint vs = glCreateShader(GL_VERTEX_SHADER); 
+    GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
+
+    glShaderSource(vs, 1, (const GLchar**)&vs_source, 0);
+    glShaderSource(fs, 1, (const GLchar**)&fs_source, 0);
+    
+    /* Compile our shader objects */
+    glCompileShader(vs);
+    GLint compile_ok = GL_FALSE;
+    glGetShaderiv(vs, GL_COMPILE_STATUS, &compile_ok);
+    if (compile_ok == GL_FALSE) {
+        fprintf(stderr, "vertex shader:");
+        print_log(vs);
+        glDeleteShader(vs);
+        return;
+    }
+    glCompileShader(fs);
+    compile_ok = GL_FALSE;
+    glGetShaderiv(fs, GL_COMPILE_STATUS, &compile_ok);
+    if (compile_ok == GL_FALSE) {
+        fprintf(stderr, "fragment shader:");
+        print_log(fs);
+        glDeleteShader(fs);
+        return;
+    }
+    
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vs);
+    glAttachShader(shaderProgram, fs);
+    glLinkProgram(shaderProgram);
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &link_ok);
+    if (!link_ok) {
+      fprintf(stderr, "glLinkProgram:");
+      print_log(shaderProgram);
+      return;
+    }
+    
+    const char* attribute_name;
+    attribute_name = "v_coord";
+    vertexCoordAttribute = glGetAttribLocation(shaderProgram, attribute_name);
+    if (vertexCoordAttribute == -1) {
+      fprintf(stderr, "Could not bind attribute %s\n", attribute_name);
+      return;
+    }
+
+
+    attribute_name = "v_normal";
+    vertexNormalAttribute = glGetAttribLocation(shaderProgram, attribute_name);
+    if (vertexNormalAttribute == -1) {
+      fprintf(stderr, "Could not bind attribute %s\n", attribute_name);
+      return;
+    }
+    
+    const char* uniform_name;
+    uniform_name = "mvp";
+    mvpUniform = glGetUniformLocation(shaderProgram, uniform_name);
+    if (mvpUniform == -1) {
+      fprintf(stderr, "Could not bind uniform %s\n", uniform_name);
+      return;
+    }
+
+    uniform_name = "pen";
+    vertexOffsetUniform = glGetUniformLocation(shaderProgram, uniform_name);
+    if (vertexOffsetUniform == -1) {
+      fprintf(stderr, "Could not bind uniform %s\n", uniform_name);
+      return;
+    }
+}
+
+void print_log(GLuint object)
+{
+  GLint log_length = 0;
+  if (glIsShader(object))
+    glGetShaderiv(object, GL_INFO_LOG_LENGTH, &log_length);
+  else if (glIsProgram(object))
+    glGetProgramiv(object, GL_INFO_LOG_LENGTH, &log_length);
+  else {
+    fprintf(stderr, "printlog: Not a shader or a program\n");
+    return;
+  }
+ 
+  char* log = (char*)malloc(log_length);
+ 
+  if (glIsShader(object))
+    glGetShaderInfoLog(object, log_length, NULL, log);
+  else if (glIsProgram(object))
+    glGetProgramInfoLog(object, log_length, NULL, log);
+ 
+  fprintf(stderr, "%s", log);
+  free(log);
+}

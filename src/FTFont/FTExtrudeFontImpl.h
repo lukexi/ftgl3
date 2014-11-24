@@ -65,6 +65,14 @@ class FTExtrudeFontImpl : public FTFontImpl
          */
         virtual void Outset(float f, float b) { front = f; back = b; }
 
+        virtual void ShaderLocations(GLint _vertexCoordAttribute, 
+                                     GLint _vertexNormalAttribute, 
+                                     GLint _vertexOffsetUniform) {
+            vertexCoordAttribute = _vertexCoordAttribute;
+            vertexNormalAttribute = _vertexNormalAttribute;
+            vertexOffsetUniform = _vertexOffsetUniform;
+        }
+
     private:
         /**
          * The extrusion distance for the font.
@@ -75,6 +83,11 @@ class FTExtrudeFontImpl : public FTFontImpl
          * The outset distance (front and back) for the font.
          */
         float front, back;
+
+        /**
+         * The uniforms and attribute locations used during rendering
+         */
+        GLint vertexCoordAttribute, vertexNormalAttribute, vertexOffsetUniform;
 };
 
 #endif // __FTExtrudeFontImpl__

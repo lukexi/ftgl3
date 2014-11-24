@@ -16,6 +16,7 @@ stamp-h1
 *.o
 *.lo
 *.la
+*.m4
 demo/c-demo
 demo/simple
 demo/FTGLDemo

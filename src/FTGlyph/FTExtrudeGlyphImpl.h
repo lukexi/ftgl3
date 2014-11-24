@@ -28,16 +28,22 @@
 #define __FTExtrudeGlyphImpl__
 
 #include "FTGlyphImpl.h"
+#include "FTGL/ftgl.h"
+#include "FTVector.h"
 
 class FTVectoriser;
+// class FTVector;
 
 class FTExtrudeGlyphImpl : public FTGlyphImpl
 {
     friend class FTExtrudeGlyph;
 
     protected:
-        FTExtrudeGlyphImpl(FT_GlyphSlot glyph, float depth, float frontOutset,
-                           float backOutset, bool useDisplayList);
+        FTExtrudeGlyphImpl(FT_GlyphSlot glyph, float depth,
+                           float frontOutset, float backOutset,
+                           GLint vertexCoordAttribute, 
+                           GLint vertexNormalAttribute, 
+                           GLint vertexOffsetUniform);
 
         virtual ~FTExtrudeGlyphImpl();
 
@@ -47,6 +53,16 @@ class FTExtrudeGlyphImpl : public FTGlyphImpl
         /**
          * Private rendering methods.
          */
+        void RenderFaceToMeshIndexAtDepth(
+            const int meshIndex, const FTPoint &normal, const float depthOffset);
+        void BufferPointsToMeshIndex(
+            const FTVector<FTGL_FLOAT> *points, const FTVector<FTGL_FLOAT> *normals, 
+            const int meshIndex);
+        void DrawVAO(const int meshIndex);
+        void AddVertex(
+            FTVector<FTGL_FLOAT> *points, const FTPoint& point, 
+            FTVector<FTGL_FLOAT> *normals, const FTPoint& normal, 
+            const float depthOffset);
         void RenderFront();
         void RenderBack();
         void RenderSide();
@@ -60,9 +76,17 @@ class FTExtrudeGlyphImpl : public FTGlyphImpl
         FTVectoriser *vectoriser;
 
         /**
-         * OpenGL display list
+         * OpenGL variables
          */
-        GLuint glList;
+        GLint vertexCoordAttribute;
+        GLint vertexNormalAttribute;
+        GLint vertexOffsetUniform;
+        GLuint meshVAOs[3];
+        GLuint coordVBOs[3];
+        GLuint normalVBOs[3];
+        // GLuint meshIBOs[3];
+        // GLuint iboSizes[3];
+        GLuint vboSizes[3];
 };
 
 #endif  //  __FTExtrudeGlyphImpl__

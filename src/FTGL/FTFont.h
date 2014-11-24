@@ -193,6 +193,22 @@ class FTGL_EXPORT FTFont
         virtual void Outset(float front, float back);
 
         /**
+         * Set the locations of shader uniforms and attributes used during rendering. 
+         * Your shader is expected to include vertexes and normal inputs, along with an
+         * 'offset' uniform that should be used to shift rendering by the provided amount,
+         * since FTGL buffers one mesh per character that needs to be offset when actually
+         * rendered with a proper layout.
+         * Only implemented by FTExtrudeFont.
+         *
+         * @param vertexCoordAttribute  The location of the vec3 coord shader attribute.
+         * @param vertexNormalAttribute   The location of the vec3 normal shader attribute.
+         * @param vertexOffsetUniform   The location of the vec3 pen offset shader uniform.
+         */
+        virtual void ShaderLocations(GLint vertexCoordAttribute, 
+                                     GLint vertexNormalAttribute, 
+                                     GLint vertexOffsetUniform);
+
+        /**
          * Enable or disable the use of Display Lists inside FTGL
          *
          * @param  useList <code>true</code> turns ON display lists.

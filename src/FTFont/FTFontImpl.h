@@ -78,6 +78,10 @@ class FTFontImpl
 
         virtual void Outset(float front, float back);
 
+        virtual void ShaderLocations(GLint vertexCoordAttribute, 
+                                     GLint vertexNormalAttribute, 
+                                     GLint vertexOffsetUniform);
+
         virtual FTBBox BBox(const char *s, const int len, FTPoint, FTPoint);
 
         virtual FTBBox BBox(const wchar_t *s, const int len, FTPoint, FTPoint);

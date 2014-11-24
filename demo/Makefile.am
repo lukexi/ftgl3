@@ -8,7 +8,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/src $(FT2_CPPFLAGS)
 simple_SOURCES = \
     simple.cpp \
     $(NULL)
-simple_CXXFLAGS = $(FT2_CFLAGS) $(GL_CFLAGS)
+simple_CXXFLAGS = $(FT2_CFLAGS) $(GL_CFLAGS) -lglfw3
 simple_LDFLAGS = $(FT2_LIBS) $(GLUT_LIBS)
 simple_LDADD = ../src/libftgl.la
 

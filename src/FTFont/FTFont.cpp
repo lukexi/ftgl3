@@ -113,6 +113,12 @@ void FTFont::Outset(float front, float back)
     return impl->Outset(front, back);
 }
 
+void FTFont::ShaderLocations(GLint vertexCoordAttribute, 
+                             GLint vertexNormalAttribute, 
+                             GLint vertexOffsetUniform)
+{
+    return impl->ShaderLocations(vertexCoordAttribute, vertexNormalAttribute, vertexOffsetUniform);
+}
 
 void FTFont::GlyphLoadFlags(FT_Int flags)
 {
@@ -324,6 +330,12 @@ void FTFontImpl::Outset(float front, float back)
     (void)front; (void)back;
 }
 
+void FTFontImpl::ShaderLocations(GLint vertexCoordAttribute, 
+                                 GLint vertexNormalAttribute, 
+                                 GLint vertexOffsetUniform)
+{
+    ;
+}
 
 void FTFontImpl::GlyphLoadFlags(FT_Int flags)
 {

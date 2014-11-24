@@ -60,8 +60,11 @@ FTGlyph* FTExtrudeFont::MakeGlyph(FT_GlyphSlot ftGlyph)
         return NULL;
     }
 
-    return new FTExtrudeGlyph(ftGlyph, myimpl->depth, myimpl->front,
-                              myimpl->back, myimpl->useDisplayLists);
+    return new FTExtrudeGlyph(ftGlyph, myimpl->depth, 
+                              myimpl->front, myimpl->back, 
+                              myimpl->vertexCoordAttribute,
+                              myimpl->vertexNormalAttribute,
+                              myimpl->vertexOffsetUniform);
 }
 
 

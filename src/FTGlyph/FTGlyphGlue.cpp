@@ -59,8 +59,11 @@ C_TOR(ftglCreateBitmapGlyph, (FT_GlyphSlot glyph),
 
 // FTExtrudeGlyph::FTExtrudeGlyph();
 C_TOR(ftglCreateExtrudeGlyph, (FT_GlyphSlot glyph, float depth,
-                   float frontOutset, float backOutset, int useDisplayList),
-      FTExtrudeGlyph, (glyph, depth, frontOutset, backOutset, (useDisplayList != 0)),
+                   float frontOutset, float backOutset, 
+                   GLint vertexCoordAttribute, 
+                   GLint vertexNormalAttribute, 
+                   GLint vertexOffsetUniform),
+      FTExtrudeGlyph, (glyph, depth, frontOutset, backOutset, vertexCoordAttribute, vertexNormalAttribute, vertexOffsetUniform),
       GLYPH_EXTRUDE);
 
 // FTOutlineGlyph::FTOutlineGlyph();

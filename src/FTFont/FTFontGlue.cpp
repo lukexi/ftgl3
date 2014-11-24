@@ -200,6 +200,16 @@ C_FUN(void, ftglSetFontDepth, (FTGLfont *f, float d), return, Depth, (d));
 C_FUN(void, ftglSetFontOutset, (FTGLfont *f, float front, float back),
       return, FTFont::Outset, (front, back));
 
+// virtual void FTFont::ShaderLocations(GLint vertexCoordAttribute, 
+//                                      GLint vertexNormalAttribute, 
+//                                      GLint vertexOffsetUniform);
+C_FUN(void, ftglSetFontShaderLocations, (FTGLfont *f, GLint vertexCoordAttribute, 
+                                                      GLint vertexNormalAttribute,
+                                                      GLint vertexOffsetUniform),
+      return, FTFont::ShaderLocations, (vertexCoordAttribute, 
+                                        vertexNormalAttribute, 
+                                        vertexOffsetUniform));
+
 // void FTFont::UseDisplayList(bool useList);
 C_FUN(void, ftglSetFontDisplayList, (FTGLfont *f, int l),
       return, UseDisplayList, (l != 0));
