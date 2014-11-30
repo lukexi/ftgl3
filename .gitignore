@@ -1,7 +1,6 @@
 .auto
 .deps
 .libs
-Makefile.in
 Makefile
 aclocal.m4
 autom4te.cache
@@ -9,7 +8,6 @@ config.h
 config.h.in
 config.log
 config.status
-configure
 ftgl.pc
 libtool
 stamp-h1
