@@ -63,7 +63,7 @@ LIBS="$PRELIBS"
 AC_MSG_CHECKING([for GL library])
 echo host=$host
 case "x${host}" in
-  x*-mingw32) GL_GL_LIBS="-lopengl32"
+  x*-mingw32) GL_GL_LIBS="-lopengl32 -lglew32"
               GL_GLU_LIBS="-lglu32"
               ;;
   x*) GL_GL_LIBS="-lGL"

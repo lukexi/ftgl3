@@ -81,11 +81,11 @@ FTBufferFontImpl::FTBufferFontImpl(FTFont *ftFont, const char* fontFilePath) :
     for(int i = 0; i < BUFFER_CACHE_SIZE; i++)
     {
         stringCache[i] = NULL;
-        glBindTexture(GL_TEXTURE_2D, idCache[i]);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        // glBindTexture(GL_TEXTURE_2D, idCache[i]);
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     }
 
     lastString = 0;
@@ -105,11 +105,11 @@ FTBufferFontImpl::FTBufferFontImpl(FTFont *ftFont,
     for(int i = 0; i < BUFFER_CACHE_SIZE; i++)
     {
         stringCache[i] = NULL;
-        glBindTexture(GL_TEXTURE_2D, idCache[i]);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        // glBindTexture(GL_TEXTURE_2D, idCache[i]);
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     }
 
     lastString = 0;
@@ -230,14 +230,14 @@ inline FTPoint FTBufferFontImpl::RenderI(const T* string, const int len,
     int cacheIndex = -1;
     bool inCache = false;
 
-    // Protect blending functions and GL_TEXTURE_2D
-    glPushAttrib(GL_COLOR_BUFFER_BIT | GL_ENABLE_BIT | GL_TEXTURE_ENV_MODE);
-
-    // Protect glPixelStorei() calls
-    glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
-
-    glEnable(GL_TEXTURE_2D);
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    // // Protect blending functions and GL_TEXTURE_2D
+    // glPushAttrib(GL_COLOR_BUFFER_BIT | GL_ENABLE_BIT | GL_TEXTURE_ENV_MODE);
+    //
+    // // Protect glPixelStorei() calls
+    // glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
+    //
+    // glEnable(GL_TEXTURE_2D);
+    // glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
     // Search whether the string is already in a texture we uploaded
     for(int n = 0; n < BUFFER_CACHE_SIZE; n++)
@@ -308,24 +308,24 @@ inline FTPoint FTBufferFontImpl::RenderI(const T* string, const int len,
     FTPoint low = position + bbox.Lower() - FTPoint(padding, padding);
     FTPoint up = position + bbox.Upper() + FTPoint(padding, padding);
 
-    glBegin(GL_QUADS);
-        glNormal3f(0.0f, 0.0f, 1.0f);
-        glTexCoord2f(0.0f,
-                     1.0f / texHeight * (texHeight - height));
-        glVertex3f(low.Xf(), up.Yf(), position.Zf());
-        glTexCoord2f(0.0f,
-                     1.0f);
-        glVertex3f(low.Xf(), low.Yf(), position.Zf());
-        glTexCoord2f(1.0f / texWidth * width,
-                     1.0f);
-        glVertex3f(up.Xf(), low.Yf(), position.Zf());
-        glTexCoord2f(1.0f / texWidth * width,
-                     1.0f / texHeight * (texHeight - height));
-        glVertex3f(up.Xf(), up.Yf(), position.Zf());
-    glEnd();
-
-    glPopClientAttrib();
-    glPopAttrib();
+    // glBegin(GL_QUADS);
+    //     glNormal3f(0.0f, 0.0f, 1.0f);
+    //     glTexCoord2f(0.0f,
+    //                  1.0f / texHeight * (texHeight - height));
+    //     glVertex3f(low.Xf(), up.Yf(), position.Zf());
+    //     glTexCoord2f(0.0f,
+    //                  1.0f);
+    //     glVertex3f(low.Xf(), low.Yf(), position.Zf());
+    //     glTexCoord2f(1.0f / texWidth * width,
+    //                  1.0f);
+    //     glVertex3f(up.Xf(), low.Yf(), position.Zf());
+    //     glTexCoord2f(1.0f / texWidth * width,
+    //                  1.0f / texHeight * (texHeight - height));
+    //     glVertex3f(up.Xf(), up.Yf(), position.Zf());
+    // glEnd();
+    //
+    // glPopClientAttrib();
+    // glPopAttrib();
 
     return position + advanceCache[cacheIndex];
 }
@@ -345,4 +345,3 @@ FTPoint FTBufferFontImpl::Render(const wchar_t * string, const int len,
 {
     return RenderI(string, len, position, spacing, renderMode);
 }
-

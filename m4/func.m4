@@ -17,7 +17,7 @@ AC_CACHE_CHECK([for __func__], ac_cv_cpp_func,
         )]
     )]
 )
-             
+
 if test $ac_cv_cpp_func = yes; then
     AC_DEFINE(__FUNC__, __func__, [Define to __FUNCTION__ or  "" if __func__ is not available.])
 elif test $ac_cv_cpp_func = __FUNCTION__; then

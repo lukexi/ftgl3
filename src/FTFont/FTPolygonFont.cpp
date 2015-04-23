@@ -94,16 +94,16 @@ inline FTPoint FTPolygonFontImpl::RenderI(const T* string, const int len,
                                           int renderMode)
 {
     // Protect GL_POLYGON
-    glPushAttrib(GL_POLYGON_BIT);
-
-    // Activate front and back face filling. If the caller wants only
-    // front face, it can set proper culling.
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
+    // glPushAttrib(GL_POLYGON_BIT);
+    //
+    // // Activate front and back face filling. If the caller wants only
+    // // front face, it can set proper culling.
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    //
     FTPoint tmp = FTFontImpl::Render(string, len,
                                      position, spacing, renderMode);
-
-    glPopAttrib();
+    //
+    // glPopAttrib();
 
     return tmp;
 }
@@ -123,4 +123,3 @@ FTPoint FTPolygonFontImpl::Render(const wchar_t * string, const int len,
 {
     return RenderI(string, len, position, spacing, renderMode);
 }
-

@@ -85,12 +85,12 @@ FTOutlineGlyphImpl::FTOutlineGlyphImpl(FT_GlyphSlot glyph, float _outset,
 
     if(useDisplayList)
     {
-        glList = glGenLists(1);
-        glNewList(glList, GL_COMPILE);
+        // glList = glGenLists(1);
+        // glNewList(glList, GL_COMPILE);
 
         DoRender();
 
-        glEndList();
+        // glEndList();
 
         delete vectoriser;
         vectoriser = NULL;
@@ -102,7 +102,7 @@ FTOutlineGlyphImpl::~FTOutlineGlyphImpl()
 {
     if(glList)
     {
-        glDeleteLists(glList, 1);
+        // glDeleteLists(glList, 1);
     }
     else if(vectoriser)
     {
@@ -116,16 +116,16 @@ const FTPoint& FTOutlineGlyphImpl::RenderImpl(const FTPoint& pen,
 {
     (void)renderMode;
 
-    glTranslatef(pen.Xf(), pen.Yf(), pen.Zf());
+    // glTranslatef(pen.Xf(), pen.Yf(), pen.Zf());
     if(glList)
     {
-        glCallList(glList);
+        // glCallList(glList);
     }
     else if(vectoriser)
     {
         DoRender();
     }
-    glTranslatef(-pen.Xf(), -pen.Yf(), -pen.Zf());
+    // glTranslatef(-pen.Xf(), -pen.Yf(), -pen.Zf());
 
     return advance;
 }
@@ -137,15 +137,14 @@ void FTOutlineGlyphImpl::DoRender()
     {
         const FTContour* contour = vectoriser->Contour(c);
 
-        glBegin(GL_LINE_LOOP);
-            for(unsigned int i = 0; i < contour->PointCount(); ++i)
-            {
-                FTPoint point = FTPoint(contour->Point(i).X() + contour->Outset(i).X() * outset,
-                                        contour->Point(i).Y() + contour->Outset(i).Y() * outset,
-                                        0);
-                glVertex2f(point.Xf() / 64.0f, point.Yf() / 64.0f);
-            }
-        glEnd();
+        // glBegin(GL_LINE_LOOP);
+        //     for(unsigned int i = 0; i < contour->PointCount(); ++i)
+        //     {
+        //         FTPoint point = FTPoint(contour->Point(i).X() + contour->Outset(i).X() * outset,
+        //                                 contour->Point(i).Y() + contour->Outset(i).Y() * outset,
+        //                                 0);
+        //         glVertex2f(point.Xf() / 64.0f, point.Yf() / 64.0f);
+        //     }
+        // glEnd();
     }
 }
-

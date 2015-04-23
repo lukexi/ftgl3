@@ -94,17 +94,17 @@ inline FTPoint FTOutlineFontImpl::RenderI(const T* string, const int len,
                                           int renderMode)
 {
     // Protect GL_TEXTURE_2D, glHint() and GL_LINE_SMOOTH
-    glPushAttrib(GL_ENABLE_BIT | GL_HINT_BIT | GL_LINE_BIT
-                  | GL_COLOR_BUFFER_BIT);
-
-    glDisable(GL_TEXTURE_2D);
-    glEnable(GL_LINE_SMOOTH);
-    glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
+    // glPushAttrib(GL_ENABLE_BIT | GL_HINT_BIT | GL_LINE_BIT
+    //               | GL_COLOR_BUFFER_BIT);
+    //
+    // glDisable(GL_TEXTURE_2D);
+    // glEnable(GL_LINE_SMOOTH);
+    // glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
 
     FTPoint tmp = FTFontImpl::Render(string, len,
                                      position, spacing, renderMode);
 
-    glPopAttrib();
+    // glPopAttrib();
 
     return tmp;
 }
@@ -124,4 +124,3 @@ FTPoint FTOutlineFontImpl::Render(const wchar_t * string, const int len,
 {
     return RenderI(string, len, position, spacing, renderMode);
 }
-

@@ -128,8 +128,6 @@ AC_SUBST(ECHO_N)
 
 AC_CONFIG_FILES([
   ftgl.pc
-])
-AC_CONFIG_FILES([
   Makefile
   demo/Makefile
   docs/Makefile

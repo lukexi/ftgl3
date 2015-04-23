@@ -34,7 +34,6 @@
 #include "FTExtrudeGlyphImpl.h"
 #include "FTVectoriser.h"
 
-#include <OpenGL/gl3.h>
 #include <assert.h>
 
 
@@ -45,8 +44,8 @@
 
 FTExtrudeGlyph::FTExtrudeGlyph(FT_GlyphSlot glyph, float depth,
                                float frontOutset, float backOutset,
-                               GLint vertexCoordAttribute, 
-                               GLint vertexNormalAttribute, 
+                               GLint vertexCoordAttribute,
+                               GLint vertexNormalAttribute,
                                GLint vertexOffsetUniform) :
     FTGlyph(new FTExtrudeGlyphImpl(glyph, depth, frontOutset, backOutset,
                                    vertexCoordAttribute,
@@ -73,8 +72,8 @@ const FTPoint& FTExtrudeGlyph::Render(const FTPoint& pen, int renderMode)
 
 FTExtrudeGlyphImpl::FTExtrudeGlyphImpl(FT_GlyphSlot glyph, float _depth,
                                        float _frontOutset, float _backOutset,
-                                       GLint _vertexCoordAttribute, 
-                                       GLint _vertexNormalAttribute, 
+                                       GLint _vertexCoordAttribute,
+                                       GLint _vertexNormalAttribute,
                                        GLint _vertexOffsetUniform)
 :   FTGlyphImpl(glyph),
     vectoriser(0)
@@ -105,10 +104,12 @@ FTExtrudeGlyphImpl::FTExtrudeGlyphImpl(FT_GlyphSlot glyph, float _depth,
     vertexNormalAttribute = _vertexNormalAttribute;
     vertexOffsetUniform = _vertexOffsetUniform;
 
+    glewInit();
+
     // Setup buffers for GL
     glGenBuffers(3, coordVBOs);
     glGenBuffers(3, normalVBOs);
-    
+
     glGenVertexArrays(3, meshVAOs);
     // glGenBuffers(3, meshIBOs);
 
@@ -166,8 +167,8 @@ void FTExtrudeGlyphImpl::DrawVAO(const int meshIndex)
 }
 
 void FTExtrudeGlyphImpl::AddVertex(
-    FTVector<FTGL_FLOAT> *points, const FTPoint& point, 
-    FTVector<FTGL_FLOAT> *normals, const FTPoint& normal, 
+    FTVector<FTGL_FLOAT> *points, const FTPoint& point,
+    FTVector<FTGL_FLOAT> *normals, const FTPoint& normal,
     const float depthOffset)
 {
     points->push_back(point.Xf() / 64.0);
@@ -197,7 +198,6 @@ void FTExtrudeGlyphImpl::RenderFaceToMeshIndexAtDepth(
         // Implementation from TriangleExtractor
         switch(polygonType)
         {
-            case GL_QUAD_STRIP:
             case GL_TRIANGLE_STRIP:
                 AddVertex(&points, subMesh->Point(0), &normals, normal, depthOffset);
                 for(unsigned int i = 0; i < subMesh->PointCount(); ++i) {
@@ -247,9 +247,9 @@ void FTExtrudeGlyphImpl::BufferPointsToMeshIndex(
     // Buffer the coords
     vboSizes[meshIndex] = points->size();
     glBindBuffer(GL_ARRAY_BUFFER, coordVBOs[meshIndex]);
-    glBufferData(GL_ARRAY_BUFFER, 
-        points->size() * sizeof(FTGL_FLOAT), 
-        static_cast<const FTGL_FLOAT*>(points->begin()), 
+    glBufferData(GL_ARRAY_BUFFER,
+        points->size() * sizeof(FTGL_FLOAT),
+        static_cast<const FTGL_FLOAT*>(points->begin()),
         GL_STATIC_DRAW);
 
     // Describe the points
@@ -266,9 +266,9 @@ void FTExtrudeGlyphImpl::BufferPointsToMeshIndex(
 
     // Buffer the normals
     glBindBuffer(GL_ARRAY_BUFFER, normalVBOs[meshIndex]);
-    glBufferData(GL_ARRAY_BUFFER, 
-        normals->size() * sizeof(FTGL_FLOAT), 
-        static_cast<const FTGL_FLOAT*>(normals->begin()), 
+    glBufferData(GL_ARRAY_BUFFER,
+        normals->size() * sizeof(FTGL_FLOAT),
+        static_cast<const FTGL_FLOAT*>(normals->begin()),
         GL_STATIC_DRAW);
 
     // Describe normals
@@ -285,9 +285,9 @@ void FTExtrudeGlyphImpl::BufferPointsToMeshIndex(
     // For a possible index array buffer implementation...
     // iboSizes[meshIndex] = indices.size();
     // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibos + meshIndex);
-    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, 
-    //     indices.size() * sizeof(GLushort), 
-    //     static_cast<const GLushort*>(indices.begin()), 
+    // glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+    //     indices.size() * sizeof(GLushort),
+    //     static_cast<const GLushort*>(indices.begin()),
     //     GL_STATIC_DRAW);
     // printf("Buffered thisa many points!!! %lu \n", points.size());
 
@@ -298,7 +298,7 @@ void FTExtrudeGlyphImpl::BufferPointsToMeshIndex(
 void FTExtrudeGlyphImpl::RenderFront()
 {
     vectoriser->MakeMesh(1.0, 1, frontOutset);
-    
+
     const FTPoint normal = FTPoint(0.0, 0.0, 1.0).Normalise();
     const int meshIndex = 0;
     RenderFaceToMeshIndexAtDepth(meshIndex, normal, 0);
@@ -307,7 +307,7 @@ void FTExtrudeGlyphImpl::RenderFront()
 void FTExtrudeGlyphImpl::RenderBack()
 {
     vectoriser->MakeMesh(-1.0, 2, backOutset);
-    
+
     const FTPoint normal = FTPoint(0.0, 0.0, -1.0).Normalise();
     const int meshIndex = 1;
     RenderFaceToMeshIndexAtDepth(meshIndex, normal, -depth);
@@ -359,7 +359,7 @@ void FTExtrudeGlyphImpl::RenderSide()
                 AddVertex(&points, backPt, &normals, normal, 0.0f);
                 AddVertex(&points, frontPt, &normals, normal, -depth);
 
-                if (j == n) 
+                if (j == n)
                 {
                     AddVertex(&points, frontPt, &normals, normal, -depth);
                 }
@@ -375,7 +375,7 @@ void FTExtrudeGlyphImpl::RenderSide()
                 AddVertex(&points, backPt, &normals, normal, -depth);
                 AddVertex(&points, frontPt, &normals, normal, 0.0f);
 
-                if (j == n) 
+                if (j == n)
                 {
                     AddVertex(&points, frontPt, &normals, normal, 0.0f);
                 }

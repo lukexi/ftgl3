@@ -49,7 +49,7 @@
 
 
 #ifdef WIN32
-
+    #include <GL/glew.h>
     // Under windows avoid including <windows.h> is overrated.
     // Sure, it can be avoided and "name space pollution" can be
     // avoided, but why? It really doesn't make that much difference
@@ -57,10 +57,10 @@
     #define  WIN32_LEAN_AND_MEAN
     #include <windows.h>
 
-    #ifndef __gl_h_
-        #include <GL/gl.h>
+    //#ifndef __gl_h_
+        //#include <GL/gl.h>
         #include <GL/glu.h>
-    #endif
+    //#endif
 
 #else
 
@@ -138,4 +138,3 @@ struct _FTGLlayout
 FTGL_END_C_DECLS
 
 #endif  //__FTINTERNALS_H__
-

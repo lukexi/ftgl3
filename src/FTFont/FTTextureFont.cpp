@@ -204,16 +204,16 @@ GLuint FTTextureFontImpl::CreateTexture()
     memset(textureMemory, 0, totalMemory);
 
     GLuint textID;
-    glGenTextures(1, (GLuint*)&textID);
-
-    glBindTexture(GL_TEXTURE_2D, textID);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, textureWidth, textureHeight,
-                 0, GL_ALPHA, GL_UNSIGNED_BYTE, textureMemory);
+    // glGenTextures(1, (GLuint*)&textID);
+    //
+    // glBindTexture(GL_TEXTURE_2D, textID);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    //
+    // glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, textureWidth, textureHeight,
+    //              0, GL_ALPHA, GL_UNSIGNED_BYTE, textureMemory);
 
     delete [] textureMemory;
 
@@ -240,17 +240,17 @@ inline FTPoint FTTextureFontImpl::RenderI(const T* string, const int len,
                                           int renderMode)
 {
     // Protect GL_TEXTURE_2D
-    glPushAttrib(GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_TEXTURE_ENV_MODE);
-
-    glEnable(GL_TEXTURE_2D);
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-    FTTextureGlyphImpl::ResetActiveTexture();
+    // glPushAttrib(GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_TEXTURE_ENV_MODE);
+    //
+    // glEnable(GL_TEXTURE_2D);
+    // glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    //
+    // FTTextureGlyphImpl::ResetActiveTexture();
 
     FTPoint tmp = FTFontImpl::Render(string, len,
                                      position, spacing, renderMode);
 
-    glPopAttrib();
+    // glPopAttrib();
 
     return tmp;
 }
@@ -270,4 +270,3 @@ FTPoint FTTextureFontImpl::Render(const wchar_t * string, const int len,
 {
     return RenderI(string, len, position, spacing, renderMode);
 }
-

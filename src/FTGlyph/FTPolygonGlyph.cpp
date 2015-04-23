@@ -88,12 +88,12 @@ FTPolygonGlyphImpl::FTPolygonGlyphImpl(FT_GlyphSlot glyph, float _outset,
 
     if(useDisplayList)
     {
-        glList = glGenLists(1);
-        glNewList(glList, GL_COMPILE);
-
-        DoRender();
-
-        glEndList();
+        // glList = glGenLists(1);
+        // glNewList(glList, GL_COMPILE);
+        //
+        // DoRender();
+        //
+        // glEndList();
 
         delete vectoriser;
         vectoriser = NULL;
@@ -105,7 +105,7 @@ FTPolygonGlyphImpl::~FTPolygonGlyphImpl()
 {
     if(glList)
     {
-        glDeleteLists(glList, 1);
+        // glDeleteLists(glList, 1);
     }
     else if(vectoriser)
     {
@@ -119,16 +119,16 @@ const FTPoint& FTPolygonGlyphImpl::RenderImpl(const FTPoint& pen,
 {
     (void)renderMode;
 
-    glTranslatef(pen.Xf(), pen.Yf(), pen.Zf());
-    if(glList)
-    {
-        glCallList(glList);
-    }
-    else if(vectoriser)
-    {
-        DoRender();
-    }
-    glTranslatef(-pen.Xf(), -pen.Yf(), -pen.Zf());
+    // glTranslatef(pen.Xf(), pen.Yf(), pen.Zf());
+    // if(glList)
+    // {
+    //     glCallList(glList);
+    // }
+    // else if(vectoriser)
+    // {
+    //     DoRender();
+    // }
+    // glTranslatef(-pen.Xf(), -pen.Yf(), -pen.Zf());
 
     return advance;
 }
@@ -145,14 +145,13 @@ void FTPolygonGlyphImpl::DoRender()
         const FTTesselation* subMesh = mesh->Tesselation(t);
         unsigned int polygonType = subMesh->PolygonType();
 
-        glBegin(polygonType);
-            for(unsigned int i = 0; i < subMesh->PointCount(); ++i)
-            {
-                FTPoint point = subMesh->Point(i);
-                glTexCoord2f(point.Xf() / hscale, point.Yf() / vscale);
-                glVertex3f(point.Xf() / 64.0f, point.Yf() / 64.0f, 0.0f);
-            }
-        glEnd();
+        // glBegin(polygonType);
+        //     for(unsigned int i = 0; i < subMesh->PointCount(); ++i)
+        //     {
+        //         FTPoint point = subMesh->Point(i);
+        //         glTexCoord2f(point.Xf() / hscale, point.Yf() / vscale);
+        //         glVertex3f(point.Xf() / 64.0f, point.Yf() / 64.0f, 0.0f);
+        //     }
+        // glEnd();
     }
 }
-

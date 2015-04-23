@@ -143,15 +143,14 @@ const FTPoint& FTPixmapGlyphImpl::RenderImpl(const FTPoint& pen,
         dx = floor(pen.Xf() + pos.Xf());
         dy = floor(pen.Yf() - pos.Yf());
 
-        glBitmap(0, 0, 0.0f, 0.0f, dx, dy, (const GLubyte*)0);
-        glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
-
-        glDrawPixels(destWidth, destHeight, GL_LUMINANCE_ALPHA,
-                     GL_UNSIGNED_BYTE, (const GLvoid*)data);
-        glBitmap(0, 0, 0.0f, 0.0f, -dx, -dy, (const GLubyte*)0);
+        // glBitmap(0, 0, 0.0f, 0.0f, dx, dy, (const GLubyte*)0);
+        // glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+        // glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
+        //
+        // glDrawPixels(destWidth, destHeight, GL_LUMINANCE_ALPHA,
+        //              GL_UNSIGNED_BYTE, (const GLvoid*)data);
+        // glBitmap(0, 0, 0.0f, 0.0f, -dx, -dy, (const GLubyte*)0);
     }
 
     return advance;
 }
-

@@ -85,30 +85,30 @@ inline FTPoint FTPixmapFontImpl::RenderI(const T* string, const int len,
                                          int renderMode)
 {
     // Protect GL_TEXTURE_2D and glPixelTransferf()
-    glPushAttrib(GL_ENABLE_BIT | GL_PIXEL_MODE_BIT | GL_COLOR_BUFFER_BIT
-                  | GL_POLYGON_BIT);
-
-    // Protect glPixelStorei() calls (made by FTPixmapGlyphImpl::RenderImpl).
-    glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
-
-    // Needed on OSX
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-    glDisable(GL_TEXTURE_2D);
-
-    GLfloat ftglColour[4];
-    glGetFloatv(GL_CURRENT_RASTER_COLOR, ftglColour);
-
-    glPixelTransferf(GL_RED_SCALE, ftglColour[0]);
-    glPixelTransferf(GL_GREEN_SCALE, ftglColour[1]);
-    glPixelTransferf(GL_BLUE_SCALE, ftglColour[2]);
-    glPixelTransferf(GL_ALPHA_SCALE, ftglColour[3]);
+    // glPushAttrib(GL_ENABLE_BIT | GL_PIXEL_MODE_BIT | GL_COLOR_BUFFER_BIT
+    //               | GL_POLYGON_BIT);
+    //
+    // // Protect glPixelStorei() calls (made by FTPixmapGlyphImpl::RenderImpl).
+    // glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
+    //
+    // // Needed on OSX
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    //
+    // glDisable(GL_TEXTURE_2D);
+    //
+    // GLfloat ftglColour[4];
+    // glGetFloatv(GL_CURRENT_RASTER_COLOR, ftglColour);
+    //
+    // glPixelTransferf(GL_RED_SCALE, ftglColour[0]);
+    // glPixelTransferf(GL_GREEN_SCALE, ftglColour[1]);
+    // glPixelTransferf(GL_BLUE_SCALE, ftglColour[2]);
+    // glPixelTransferf(GL_ALPHA_SCALE, ftglColour[3]);
 
     FTPoint tmp = FTFontImpl::Render(string, len,
                                      position, spacing, renderMode);
 
-    glPopClientAttrib();
-    glPopAttrib();
+    // glPopClientAttrib();
+    // glPopAttrib();
 
     return tmp;
 }
@@ -128,4 +128,3 @@ FTPoint FTPixmapFontImpl::Render(const wchar_t * string, const int len,
 {
     return RenderI(string, len, position, spacing, renderMode);
 }
-

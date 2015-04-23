@@ -105,40 +105,40 @@ FTTextureGlyphImpl::FTTextureGlyphImpl(FT_GlyphSlot glyph, int id, int xOffset,
 
     if(destWidth && destHeight)
     {
-        glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
-
-        glPixelStorei(GL_UNPACK_LSB_FIRST, GL_FALSE);
-        glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-        GLint w,h;
-
-        glBindTexture(GL_TEXTURE_2D, glTextureID);
-        glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
-        glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
-
-        FTASSERT(xOffset >= 0);
-        FTASSERT(yOffset >= 0);
-        FTASSERT(destWidth >= 0);
-        FTASSERT(destHeight >= 0);
-        FTASSERT(xOffset + destWidth <= w);
-        FTASSERT(yOffset + destHeight <= h);
-
-        if (yOffset + destHeight > h)
-        {
-            // We'll only get here if we are soft-failing our asserts. In that
-            // case, since the data we're trying to put into our texture is
-            // too long, we'll only copy a portion of the image.
-            destHeight = h - yOffset;
-        }
-        if (destHeight >= 0)
-        {
-            glTexSubImage2D(GL_TEXTURE_2D, 0, xOffset, yOffset,
-                            destWidth, destHeight, GL_ALPHA, GL_UNSIGNED_BYTE,
-                            bitmap.buffer);
-        }
-
-        glPopClientAttrib();
+        // glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
+        //
+        // glPixelStorei(GL_UNPACK_LSB_FIRST, GL_FALSE);
+        // glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+        // glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        //
+        // GLint w,h;
+        //
+        // glBindTexture(GL_TEXTURE_2D, glTextureID);
+        // glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
+        // glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
+        //
+        // FTASSERT(xOffset >= 0);
+        // FTASSERT(yOffset >= 0);
+        // FTASSERT(destWidth >= 0);
+        // FTASSERT(destHeight >= 0);
+        // FTASSERT(xOffset + destWidth <= w);
+        // FTASSERT(yOffset + destHeight <= h);
+        //
+        // if (yOffset + destHeight > h)
+        // {
+        //     // We'll only get here if we are soft-failing our asserts. In that
+        //     // case, since the data we're trying to put into our texture is
+        //     // too long, we'll only copy a portion of the image.
+        //     destHeight = h - yOffset;
+        // }
+        // if (destHeight >= 0)
+        // {
+        //     glTexSubImage2D(GL_TEXTURE_2D, 0, xOffset, yOffset,
+        //                     destWidth, destHeight, GL_ALPHA, GL_UNSIGNED_BYTE,
+        //                     bitmap.buffer);
+        // }
+        //
+        // glPopClientAttrib();
     }
 
 //      0
@@ -176,20 +176,19 @@ const FTPoint& FTTextureGlyphImpl::RenderImpl(const FTPoint& pen,
     dx = floor(pen.Xf() + corner.Xf());
     dy = floor(pen.Yf() + corner.Yf());
 
-    glBegin(GL_QUADS);
-        glTexCoord2f(uv[0].Xf(), uv[0].Yf());
-        glVertex3f(dx, dy, pen.Zf());
-
-        glTexCoord2f(uv[0].Xf(), uv[1].Yf());
-        glVertex3f(dx, dy - destHeight, pen.Zf());
-
-        glTexCoord2f(uv[1].Xf(), uv[1].Yf());
-        glVertex3f(dx + destWidth, dy - destHeight, pen.Zf());
-
-        glTexCoord2f(uv[1].Xf(), uv[0].Yf());
-        glVertex3f(dx + destWidth, dy, pen.Zf());
-    glEnd();
+    // glBegin(GL_QUADS);
+    //     glTexCoord2f(uv[0].Xf(), uv[0].Yf());
+    //     glVertex3f(dx, dy, pen.Zf());
+    //
+    //     glTexCoord2f(uv[0].Xf(), uv[1].Yf());
+    //     glVertex3f(dx, dy - destHeight, pen.Zf());
+    //
+    //     glTexCoord2f(uv[1].Xf(), uv[1].Yf());
+    //     glVertex3f(dx + destWidth, dy - destHeight, pen.Zf());
+    //
+    //     glTexCoord2f(uv[1].Xf(), uv[0].Yf());
+    //     glVertex3f(dx + destWidth, dy, pen.Zf());
+    // glEnd();
 
     return advance;
 }
-
